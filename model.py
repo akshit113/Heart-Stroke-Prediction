@@ -2,12 +2,21 @@ import sys
 import warnings
 
 import numpy as np
-from pandas import read_csv, get_dummies, concat
+from pandas import read_csv, get_dummies, concat, DataFrame
+from sklearn.preprocessing import MinMaxScaler
 
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
 warnings.filterwarnings("ignore")
 np.set_printoptions(threshold=sys.maxsize)
+
+
+def set_pandas():
+    # Setting display option in pandas
+    set_option('display.max_rows', None)
+    set_option('display.max_columns', None)
+    set_option('display.width', None)
+    set_option('display.max_colwidth', -1)
 
 
 def import_data(features='train.csv',
@@ -60,14 +69,24 @@ def one_hot_encode(df, colnames):
     return df
 
 
+def normalize_columns(df, colnames, scaler):
+    """Performs Normalization using MinMaxScaler class in Sckikit-learn"""
+    for col in colnames:
+        x = df[[col]].values.astype(float)
+        x_scaled = scaler.fit_transform(x)
+        df[col] = DataFrame(x_scaled)
+    print(f'''Normalized Columns: {colnames} using MinMaxScaler.''')
+    return df
+
+
 if __name__ == '__main__':
+    set_pandas()
     train_df = import_data(train=True)
     print(train_df.columns)
 
     print(train_df.isna().sum())
     train_df = clean_data(train_df)
     train_df = one_hot_encode(train_df, colnames=['work_type', 'smoking_status'])
-
-
+    train_df = normalize_columns(train_df, colnames=['bmi', 'age', 'avg_glucose_level'], scaler=MinMaxScaler())
 
     print('test')
