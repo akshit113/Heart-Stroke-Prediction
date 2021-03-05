@@ -2,7 +2,8 @@ import sys
 import warnings
 
 import numpy as np
-from pandas import read_csv, get_dummies, concat, DataFrame
+from pandas import read_csv, get_dummies, concat, DataFrame, set_option
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 np.set_printoptions(threshold=sys.maxsize)
@@ -79,6 +80,26 @@ def normalize_columns(df, colnames, scaler):
     return df
 
 
+def split_dataset(df, test_size, seed):
+    """This function randomly splits (using seed) train data into training set and validation set. The test size
+    paramter specifies the ratio of input that must be allocated to the test set
+    :param df: one-hot encoded dataset
+    :param test_size: ratio of test-train data
+    :param seed: random split
+    :return: training and validation data
+    """
+    ncols = np.size(df, 1)
+    X = df.iloc[:, range(0, ncols - 1)]
+
+    Y = df.iloc[:, ncols - 1:]
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
+    print(x_train.shape)
+    print(x_test.shape)
+    print(y_train.shape)
+    print(y_test.shape)
+    return x_train, x_test, y_train, y_test
+
+
 if __name__ == '__main__':
     set_pandas()
     train_df = import_data(train=True)
@@ -88,5 +109,6 @@ if __name__ == '__main__':
     train_df = clean_data(train_df)
     train_df = one_hot_encode(train_df, colnames=['work_type', 'smoking_status'])
     train_df = normalize_columns(train_df, colnames=['bmi', 'age', 'avg_glucose_level'], scaler=MinMaxScaler())
+    x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
 
     print('test')
