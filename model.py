@@ -6,7 +6,7 @@ from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-import lightgbm as lgb
+from imblearn.over_sampling import RandomOverSampler
 
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
@@ -125,8 +125,8 @@ if __name__ == '__main__':
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
 
 
-    from imblearn.over_sampling import RandomOverSampler
-    #
+
+    # Oversample the data because of class imbalance problem 5% / 95%
     over = RandomOverSampler()
     x_over, y_over = over.fit_resample(x_train,y_train)
     print(y_over['stroke'].value_counts())
