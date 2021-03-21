@@ -1,12 +1,13 @@
 import sys
 import warnings
+from pickle import dump
 
 import numpy as np
+from imblearn.over_sampling import RandomOverSampler
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from imblearn.over_sampling import RandomOverSampler
 
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
@@ -124,12 +125,14 @@ if __name__ == '__main__':
     train_df = normalize_columns(train_df, colnames=['bmi', 'age', 'avg_glucose_level'], scaler=MinMaxScaler())
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
 
-
-
     # Oversample the data because of class imbalance problem 5% / 95%
     over = RandomOverSampler()
-    x_over, y_over = over.fit_resample(x_train,y_train)
+    x_over, y_over = over.fit_resample(x_train, y_train)
     print(y_over['stroke'].value_counts())
     model = fit_model(x_over, y_over)
     y_pred = make_predictions(model, x_test)
     print('test')
+
+    dump(model, open('classifier.pkl', 'wb'))
+
+    print('pickle dumped')
