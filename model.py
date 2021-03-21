@@ -3,8 +3,10 @@ import warnings
 
 import numpy as np
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import lightgbm as lgb
 
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
@@ -100,6 +102,17 @@ def split_dataset(df, test_size, seed):
     return x_train, x_test, y_train, y_test
 
 
+def fit_model(x_train, y_train):
+    model = RandomForestClassifier()
+    model.fit(x_train, y_train)
+    return model
+
+
+def make_predictions(model, x_test):
+    y_pred = DataFrame(model.predict_proba(x_test))
+    return y_pred
+
+
 if __name__ == '__main__':
     set_pandas()
     train_df = import_data(train=True)
@@ -111,4 +124,12 @@ if __name__ == '__main__':
     train_df = normalize_columns(train_df, colnames=['bmi', 'age', 'avg_glucose_level'], scaler=MinMaxScaler())
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
 
+
+    from imblearn.over_sampling import RandomOverSampler
+    #
+    over = RandomOverSampler()
+    x_over, y_over = over.fit_resample(x_train,y_train)
+    print(y_over['stroke'].value_counts())
+    model = fit_model(x_over, y_over)
+    y_pred = make_predictions(model, x_test)
     print('test')
