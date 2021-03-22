@@ -48,7 +48,8 @@ def clean_data(df):
     df['gender'] = df['gender'].apply(lambda x: 1 if x.lower() == 'male' else 0)
     df['ever_married'] = df['ever_married'].apply(lambda x: 1 if x.lower() == 'yes' else 0)
     df['Residence_type'] = df['Residence_type'].apply(lambda x: 1 if x.lower() == 'urban' else 0)
-
+    df['smoking_status'] = df['smoking_status'].str.lower()
+    df['work_type'] = df['work_type'].str.lower()
     # print(df['work_type'].value_counts())
     print(df['smoking_status'].value_counts())
 
@@ -64,8 +65,10 @@ def one_hot_encode(df, colnames):
 
     for col in colnames:
         # print(col)
-        oh_df = get_dummies(df[col], prefix=col, drop_first=True)
-        df = concat([oh_df, df], axis=1)
+        oh_df = get_dummies(df[col], prefix=col)
+        ls = sorted(list(oh_df.columns))
+        new_df = oh_df[ls[1:]]  # drop first
+        df = concat([new_df, df], axis=1)
         df = df.drop([col], axis=1)
 
     # print(list(df.columns))
@@ -120,25 +123,27 @@ def unique_vals(df):
         vals = list(set(df[col].values.tolist()))
         print(f'{col}: {vals}')
 
+
 if __name__ == '__main__':
     set_pandas()
     train_df = import_data(train=True)
     print(train_df.columns)
 
-    print(unique_vals(train_df))
-
     print(train_df.isna().sum())
     train_df = clean_data(train_df)
     train_df = one_hot_encode(train_df, colnames=['work_type', 'smoking_status'])
+    print(list(train_df.columns))
+    print("\n", unique_vals(train_df))
     train_df = normalize_columns(train_df, colnames=['bmi', 'age', 'avg_glucose_level'], scaler=MinMaxScaler())
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
-
+    print(list(x_test.columns))
     # Oversample the data because of class imbalance problem 5% / 95%
     over = RandomOverSampler()
     x_over, y_over = over.fit_resample(x_train, y_train)
     print(y_over['stroke'].value_counts())
     model = fit_model(x_over, y_over)
     y_pred = make_predictions(model, x_test)
+    print(list(x_test.columns))
     print('test')
 
     dump(model, open('classifier.pkl', 'wb'))

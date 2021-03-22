@@ -1,3 +1,6 @@
+import pickle
+
+import numpy as np
 import streamlit as st
 from pandas import read_csv, DataFrame, concat
 from sklearn.preprocessing import MinMaxScaler
@@ -56,25 +59,51 @@ def collect_data():
     heart_raw = read_csv('train.csv')
     heart = heart_raw.drop(columns=['id', 'stroke'])
     df = concat([input_df, heart], axis=0)
-    return df
+    return df, len(input_df)
 
 
-def preprocess_data(df):
+def preprocess_data(df, count):
     if 'id' in df.columns:
         df.drop(['id'], axis=1)
     if 'stroke' in df.columns:
         df.drop(['stroke'], axis=1)
 
     df = clean_data(df)
-    df = normalize_columns(df, colnames=['avg_glucose_level', 'bmi'], scaler=MinMaxScaler())
     df = one_hot_encode(df, colnames=['work_type', 'smoking_status'])
+    df = normalize_columns(df, colnames=['avg_glucose_level', 'bmi'], scaler=MinMaxScaler())
+
+    df = df.iloc[:count, :]
+
+    print(list(df.columns))
     return df
 
 
+def predictions(clf, proc_df):
+    preds = DataFrame(clf.predict_proba(proc_df))
+    # preds = np.round(preds)
+    preds = np.argmax(preds)
+    return preds
+
+
 if __name__ == '__main__':
-    test_df = collect_data()
-    proc_df = preprocess_data(test_df)
+    """
+    ['smoking_status_never smoked', 'smoking_status_smokes', 'smoking_status_unknown', 'work_type_govt_job', 'work_type_never_worked', 'work_type_private', 'work_type_self-employed', 'gender', 'age', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type', 'avg_glucose_level', 'bmi']
+    orig 
+    ['smoking_status_never smoked', 'smoking_status_smokes', 'smoking_status_unknown', 'work_type_govt_job', 'work_type_never_worked', 'work_type_private', 'work_type_self-employed', 'gender', 'age', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type', 'avg_glucose_level', 'bmi', 'stroke']
 
 
-    print(proc_df.head())
+
+    """
+    test_df, count = collect_data()
+    proc_df = preprocess_data(test_df, count)
+    print(list(proc_df.columns))
+    clf = pickle.load(open('classifier.pkl', 'rb'))
+
+    pred = predictions(clf, proc_df)
+    if pred == 0:
+        response = 'The person is not exposed to the risk of heart stroke. '
+    else:
+        response = 'The person is at risk of heart stroke.'
+
+    print(response)
     print(proc_df.shape)
