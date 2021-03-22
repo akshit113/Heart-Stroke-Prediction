@@ -114,10 +114,18 @@ def make_predictions(model, x_test):
     return y_pred
 
 
+def unique_vals(df):
+    cols = df.columns
+    for col in cols:
+        vals = list(set(df[col].values.tolist()))
+        print(f'{col}: {vals}')
+
 if __name__ == '__main__':
     set_pandas()
     train_df = import_data(train=True)
     print(train_df.columns)
+
+    print(unique_vals(train_df))
 
     print(train_df.isna().sum())
     train_df = clean_data(train_df)
