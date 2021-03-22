@@ -74,7 +74,7 @@ def preprocess_data(df, count):
 
     df = df.iloc[:count, :]
 
-    print(list(df.columns))
+    # print(list(df.columns))
     return df
 
 
@@ -96,14 +96,14 @@ if __name__ == '__main__':
     """
     test_df, count = collect_data()
     proc_df = preprocess_data(test_df, count)
-    print(list(proc_df.columns))
+    # print(list(proc_df.columns))
     clf = pickle.load(open('classifier.pkl', 'rb'))
 
     pred = predictions(clf, proc_df)
     if pred == 0:
-        response = 'The person is not exposed to the risk of heart stroke. '
+        response = 'The person is not exposed to the risk of heart stroke.'
     else:
         response = 'The person is at risk of heart stroke.'
 
-    print(response)
-    print(proc_df.shape)
+    st.subheader('Prediction')
+    st.write(response)

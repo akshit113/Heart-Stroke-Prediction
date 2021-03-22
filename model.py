@@ -67,7 +67,7 @@ def one_hot_encode(df, colnames):
         # print(col)
         oh_df = get_dummies(df[col], prefix=col)
         ls = sorted(list(oh_df.columns))
-        new_df = oh_df[ls[1:]]  # drop first
+        new_df = oh_df[ls[:]]  # drop first
         df = concat([new_df, df], axis=1)
         df = df.drop([col], axis=1)
 
