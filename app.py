@@ -15,7 +15,7 @@ def user_input_features():
     heart_disease = st.sidebar.selectbox('Heart Disease', (1, 0))
     ever_married = st.sidebar.selectbox('Ever Married', ('Yes', 'No'))
     work_type = st.sidebar.selectbox('Work Type',
-                                     ('Private', 'Govt_job', 'Never Worked', 'Children', 'Self-employed'))
+                                     ('Private', 'Govt_job', 'Never_worked', 'children', 'Self-employed'))
     residence_type = st.sidebar.selectbox('Residence Type', options=('Rural', 'Urban'))
     glucose_level = st.sidebar.slider('Glucose Level', 1.0, 500.0, step=0.1)
     bmi = st.sidebar.slider('BMI', 0.0, 100.0, step=0.1)
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     # response = "\n".join(resp_list)
     resp_df = DataFrame(resp_list, columns=['Prediction'])
     temp = test_df.iloc[:count, :]
-    final_df = concat([temp, resp_df], axis=1)
+    final_df = concat([resp_df,temp], axis=1)
     print(final_df.head(10))
     st.subheader('Prediction')
     st.write(final_df)
