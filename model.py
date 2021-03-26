@@ -3,7 +3,7 @@ import warnings
 from pickle import dump
 
 import numpy as np
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import SMOTE, RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
@@ -142,11 +142,19 @@ if __name__ == '__main__':
     print(list(x_test.columns))
     # Oversample the data because of class imbalance problem 5% / 95%
     # over = SMOTE()
+
+
     sampler = RandomUnderSampler()
-    x_over, y_over = sampler.fit_resample(x_train, y_train)
+
+    over = RandomOverSampler(sampling_strategy=0.7)
+    under = RandomUnderSampler(sampling_strategy=0.8)
+    x_over, y_over = over.fit_resample(x_train, y_train)
+    x_comb, y_comb = under.fit_resample(x_over, y_over)
+
+    # x_over, y_over = sampler.fit_resample(x_train, y_train)
     print(sorted(list(x_train.columns)))
     print(y_over['stroke'].value_counts())
-    model = fit_model(x_over, y_over)
+    model = fit_model(x_comb, y_comb)
     y_pred = make_predictions(model, x_test)
 
     f1_score = f1_score(y_test, y_pred)

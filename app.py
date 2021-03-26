@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
-    clf = pickle.load(open('models/randomforest.pkl', 'rb'))
+    clf = pickle.load(open('models/xgboost.pkl', 'rb'))
 
     pred = (predictions(clf, proc_df))
 
@@ -127,6 +127,6 @@ if __name__ == '__main__':
     # final_df = concat([resp_df,temp], axis=1)
     # print(final_df.head(10))
     st.subheader('Prediction')
-    st.dataframe(resp_df.assign(hack='').set_index('hack'))
+    st.dataframe(resp_df)
 
     print('done')
