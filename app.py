@@ -4,7 +4,6 @@ import numpy as np
 import streamlit as st
 from pandas import read_csv, DataFrame, concat
 from sklearn.preprocessing import MinMaxScaler
-
 from model import clean_data, normalize_columns, one_hot_encode
 
 
@@ -90,7 +89,7 @@ if __name__ == '__main__':
 
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
-    clf = pickle.load(open('classifier.pkl', 'rb'))
+    clf = pickle.load(open('models/randomforest.pkl', 'rb'))
 
     pred = (predictions(clf, proc_df))
 
@@ -124,10 +123,10 @@ if __name__ == '__main__':
 
     # response = "\n".join(resp_list)
     resp_df = DataFrame(resp_list, columns=['Prediction'])
-    temp = test_df.iloc[:count, :]
-    final_df = concat([resp_df,temp], axis=1)
-    print(final_df.head(10))
+    # temp = test_df.iloc[:count, :]
+    # final_df = concat([resp_df,temp], axis=1)
+    # print(final_df.head(10))
     st.subheader('Prediction')
-    st.write(final_df)
+    st.dataframe(resp_df.assign(hack='').set_index('hack'))
 
     print('done')

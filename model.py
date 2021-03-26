@@ -4,12 +4,13 @@ from pickle import dump
 
 import numpy as np
 from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-
+from xgboost import XGBClassifier
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
 warnings.filterwarnings("ignore")
@@ -108,7 +109,8 @@ def split_dataset(df, test_size, seed):
 
 
 def fit_model(x_train, y_train):
-    model = RandomForestClassifier()
+    # model = RandomForestClassifier(n_estimators=1500)
+    model = XGBClassifier()
     model.fit(x_train, y_train)
     return model
 
@@ -139,20 +141,23 @@ if __name__ == '__main__':
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
     print(list(x_test.columns))
     # Oversample the data because of class imbalance problem 5% / 95%
-    over = SMOTE()
-    x_over, y_over = over.fit_resample(x_train, y_train)
+    # over = SMOTE()
+    sampler = RandomUnderSampler()
+    x_over, y_over = sampler.fit_resample(x_train, y_train)
     print(sorted(list(x_train.columns)))
     print(y_over['stroke'].value_counts())
     model = fit_model(x_over, y_over)
     y_pred = make_predictions(model, x_test)
 
-    f1_score = f1_score(y_test,y_pred)
-    pre = precision_score(y_test,y_pred)
-    recall = recall_score(y_test,y_pred)
+    f1_score = f1_score(y_test, y_pred)
+    pre = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
 
     print(list(x_test.columns))
     print('test')
-
-    dump(model, open('classifier.pkl', 'wb'))
+    if isinstance(model, RandomForestClassifier):
+        dump(model, open('models/randomforest.pkl', 'wb'))
+    elif isinstance(model, XGBClassifier):
+        dump(model, open('models/xgboost.pkl', 'wb'))
 
     print('pickle dumped')
