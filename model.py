@@ -3,9 +3,10 @@ import warnings
 from pickle import dump
 
 import numpy as np
-from imblearn.over_sampling import RandomOverSampler, SMOTE
+from imblearn.over_sampling import SMOTE
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
@@ -144,6 +145,11 @@ if __name__ == '__main__':
     print(y_over['stroke'].value_counts())
     model = fit_model(x_over, y_over)
     y_pred = make_predictions(model, x_test)
+
+    f1_score = f1_score(y_test,y_pred)
+    pre = precision_score(y_test,y_pred)
+    recall = recall_score(y_test,y_pred)
+
     print(list(x_test.columns))
     print('test')
 
