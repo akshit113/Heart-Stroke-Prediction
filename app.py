@@ -88,11 +88,13 @@ def predictions(clf, proc_df):
 if __name__ == '__main__':
 
     test_df, count = collect_data()
+
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
     clf = pickle.load(open('classifier.pkl', 'rb'))
 
     pred = (predictions(clf, proc_df))
+
     # from collections import Counter
     #
     # dc = Counter(pred)
@@ -120,14 +122,13 @@ if __name__ == '__main__':
         print('')
     else:
         print('something is wrong in input. Contact administrator at akshit@email.arizona.edu')
-    # else:
-    #     if pred == 0:
-    #         response = 'The person is not exposed to the risk of heart stroke.'
-    #     else:
-    #         response = 'The person is at risk of heart stroke.'
 
-    response = "\n".join(resp_list)
+    # response = "\n".join(resp_list)
+    resp_df = DataFrame(resp_list, columns=['Prediction'])
+    temp = test_df.iloc[:count, :]
+    final_df = concat([temp, resp_df], axis=1)
+    print(final_df.head(10))
     st.subheader('Prediction')
-    st.write(response)
+    st.write(final_df)
 
     print('done')
