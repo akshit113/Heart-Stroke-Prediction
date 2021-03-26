@@ -15,7 +15,7 @@ def user_input_features():
     heart_disease = st.sidebar.selectbox('Heart Disease', (1, 0))
     ever_married = st.sidebar.selectbox('Ever Married', ('Yes', 'No'))
     work_type = st.sidebar.selectbox('Work Type',
-                                     ('Private', 'Government Job', 'Never Worked', 'Children', 'Self-Employed'))
+                                     ('Private', 'Govt_job', 'Never Worked', 'Children', 'Self-employed'))
     residence_type = st.sidebar.selectbox('Residence Type', options=('Rural', 'Urban'))
     glucose_level = st.sidebar.slider('Glucose Level', 1.0, 500.0, step=0.1)
     bmi = st.sidebar.slider('BMI', 0.0, 100.0, step=0.1)
@@ -38,7 +38,6 @@ def user_input_features():
 def collect_data():
     st.write("""
         # Heart Stroke Prediction ML App
-
 
         This app predicts whether a person is likely to suffer from heart stroke
         based on various health and lifestyle factors.
