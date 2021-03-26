@@ -43,12 +43,14 @@ def collect_data():
         This app predicts whether a person is likely to suffer from heart stroke
         based on various health and lifestyle factors.
 
-        The data for this project has been sourced from Kaggle
+        The data for this project has been sourced from [Kaggle](https://www.kaggle.com/fedesoriano/stroke-prediction-dataset)
+        
         """)
 
     st.sidebar.header("Input Features")
     # Collects user input features into dataframe
     uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
+    # uploaded_file = r'train.csv'
     if uploaded_file is not None:
         input_df = read_csv(uploaded_file)
     else:
@@ -64,14 +66,14 @@ def collect_data():
 
 def preprocess_data(df, count):
     if 'id' in df.columns:
-        df.drop(['id'], axis=1)
+        df = df.drop(['id'], axis=1)
     if 'stroke' in df.columns:
-        df.drop(['stroke'], axis=1)
+        df = df.drop(['stroke'], axis=1)
 
     df = clean_data(df)
     df = one_hot_encode(df, colnames=['work_type', 'smoking_status'])
     df = normalize_columns(df, colnames=['avg_glucose_level', 'bmi'], scaler=MinMaxScaler())
-
+    print(sorted(list(df.columns)))
     df = df.iloc[:count, :]
 
     # print(list(df.columns))
@@ -79,31 +81,53 @@ def preprocess_data(df, count):
 
 
 def predictions(clf, proc_df):
-    preds = DataFrame(clf.predict_proba(proc_df))
-    # preds = np.round(preds)
-    preds = np.argmax(preds)
+    preds = (clf.predict(proc_df))
     return preds
 
 
 if __name__ == '__main__':
-    """
-    ['smoking_status_never smoked', 'smoking_status_smokes', 'smoking_status_unknown', 'work_type_govt_job', 'work_type_never_worked', 'work_type_private', 'work_type_self-employed', 'gender', 'age', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type', 'avg_glucose_level', 'bmi']
-    orig 
-    ['smoking_status_never smoked', 'smoking_status_smokes', 'smoking_status_unknown', 'work_type_govt_job', 'work_type_never_worked', 'work_type_private', 'work_type_self-employed', 'gender', 'age', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type', 'avg_glucose_level', 'bmi', 'stroke']
 
-
-
-    """
     test_df, count = collect_data()
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
     clf = pickle.load(open('classifier.pkl', 'rb'))
 
-    pred = predictions(clf, proc_df)
-    if pred == 0:
-        response = 'The person is not exposed to the risk of heart stroke.'
-    else:
-        response = 'The person is at risk of heart stroke.'
+    pred = (predictions(clf, proc_df))
+    # from collections import Counter
+    #
+    # dc = Counter(pred)
+    # print(dc)
+    # list_sizes = [i for i in pred if i == 1]
 
+    print(type(pred))
+
+    if isinstance(pred, np.ndarray):
+
+        ls = list(pred)
+        resp_list = []
+        for i in ls:
+            if i == 0:
+                resp_list.append('The person is not exposed to the risk of heart stroke.')
+            elif i == 1:
+                resp_list.append('The person is at risk of heart stroke.')
+            else:
+                print(f'somethings wrong, i is {i}')
+
+        from collections import Counter
+
+        dc = Counter(resp_list)
+        print(dc)
+        print('')
+    else:
+        print('something is wrong in input. Contact administrator at akshit@email.arizona.edu')
+    # else:
+    #     if pred == 0:
+    #         response = 'The person is not exposed to the risk of heart stroke.'
+    #     else:
+    #         response = 'The person is at risk of heart stroke.'
+
+    response = "\n".join(resp_list)
     st.subheader('Prediction')
     st.write(response)
+
+    print('done')

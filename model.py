@@ -3,7 +3,7 @@ import warnings
 from pickle import dump
 
 import numpy as np
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.over_sampling import RandomOverSampler, SMOTE
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -113,7 +113,7 @@ def fit_model(x_train, y_train):
 
 
 def make_predictions(model, x_test):
-    y_pred = DataFrame(model.predict_proba(x_test))
+    y_pred = (model.predict(x_test))
     return y_pred
 
 
@@ -138,8 +138,9 @@ if __name__ == '__main__':
     x_train, x_test, y_train, y_test = split_dataset(train_df, test_size=0.2, seed=42)
     print(list(x_test.columns))
     # Oversample the data because of class imbalance problem 5% / 95%
-    over = RandomOverSampler()
+    over = SMOTE()
     x_over, y_over = over.fit_resample(x_train, y_train)
+    print(sorted(list(x_train.columns)))
     print(y_over['stroke'].value_counts())
     model = fit_model(x_over, y_over)
     y_pred = make_predictions(model, x_test)
