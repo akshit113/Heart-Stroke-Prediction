@@ -110,7 +110,7 @@ def split_dataset(df, test_size, seed):
 
 def fit_model(x_train, y_train):
     # model = RandomForestClassifier(n_estimators=1500)
-    model = XGBClassifier()
+    model = XGBClassifier(use_label_encoder=False)
     model.fit(x_train, y_train)
     return model
 

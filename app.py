@@ -1,10 +1,13 @@
 import pickle
 
+import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 from pandas import read_csv, DataFrame, concat
+from seaborn import heatmap, set_theme, diverging_palette
 from sklearn.preprocessing import MinMaxScaler
-from model import clean_data, normalize_columns, one_hot_encode
+
+from model import clean_data, normalize_columns, one_hot_encode, import_data
 
 
 def user_input_features():
@@ -71,7 +74,6 @@ def preprocess_data(df, count):
     df = clean_data(df)
     df = one_hot_encode(df, colnames=['work_type', 'smoking_status'])
     df = normalize_columns(df, colnames=['avg_glucose_level', 'bmi'], scaler=MinMaxScaler())
-    print(sorted(list(df.columns)))
     df = df.iloc[:count, :]
 
     # print(list(df.columns))
@@ -99,7 +101,7 @@ if __name__ == '__main__':
     # print(dc)
     # list_sizes = [i for i in pred if i == 1]
 
-    print(type(pred))
+
 
     if isinstance(pred, np.ndarray):
 
@@ -113,11 +115,6 @@ if __name__ == '__main__':
             else:
                 print(f'somethings wrong, i is {i}')
 
-        from collections import Counter
-
-        dc = Counter(resp_list)
-        print(dc)
-        print('')
     else:
         print('something is wrong in input. Contact administrator at akshit@email.arizona.edu')
 
@@ -128,5 +125,30 @@ if __name__ == '__main__':
     # print(final_df.head(10))
     st.subheader('Prediction')
     st.dataframe(resp_df)
+
+    set_theme(style="white")
+
+    train_df = import_data(train=True)
+
+    corr = train_df.corr()
+
+    # Generate a mask for the upper triangle
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+    # Set up the matplotlib figure
+    f, ax = plt.subplots(figsize=(3,3))
+
+    # Generate a custom diverging colormap
+    cmap = diverging_palette(256, 20, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    # res = heatmap(corr, mask=mask, cmap=cmap, vmax=5, center=0,
+    #               square=True,linewidths=2, annot=True, annot_kws={"fontsize":8})
+
+    res = heatmap(corr, vmax=1, square=True,cmap="YlGnBu", linewidths=0.1, annot=True,
+                annot_kws={"fontsize": 6},)
+
+    res.set_xticklabels(res.get_xmajorticklabels(), fontsize=10)
+    res.set_yticklabels(res.get_ymajorticklabels(), fontsize=10)
+    st.pyplot(plt)
 
     print('done')
