@@ -3,7 +3,7 @@ import warnings
 from pickle import dump
 
 import numpy as np
-from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
@@ -11,6 +11,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from xgboost import XGBClassifier
+
 np.set_printoptions(threshold=sys.maxsize)
 warnings.simplefilter('always')
 warnings.filterwarnings("ignore")
@@ -111,6 +112,7 @@ def split_dataset(df, test_size, seed):
 def fit_model(x_train, y_train):
     # model = RandomForestClassifier(n_estimators=1500)
     model = XGBClassifier(use_label_encoder=False)
+    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=123)
     model.fit(x_train, y_train)
     return model
 
@@ -142,7 +144,6 @@ if __name__ == '__main__':
     print(list(x_test.columns))
     # Oversample the data because of class imbalance problem 5% / 95%
     # over = SMOTE()
-
 
     sampler = RandomUnderSampler()
 
