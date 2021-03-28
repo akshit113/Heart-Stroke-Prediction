@@ -1,5 +1,6 @@
 # Heart Stroke Prediction
 
+![Header](download.jpg)
 
 According to the [World Health Organization](https://www.who.int/) (WHO), [heart stroke](https://www.who.int/cardiovascular_diseases/resources/cvd_report.pdf) is the 2nd leading 
 cause of death globally, responsible for approximately 11% of total deaths. 
@@ -15,4 +16,3 @@ beautiful data apps. The app is served on streamlit [here](https://share.streaml
 
 
 
-![Header](background.jpeg)
