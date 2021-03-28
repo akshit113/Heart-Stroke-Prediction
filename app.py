@@ -88,20 +88,15 @@ def predictions(clf, proc_df):
 if __name__ == '__main__':
 
     test_df, count = collect_data()
-
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
     clf = pickle.load(open('models/xgboost.pkl', 'rb'))
-
     pred = (predictions(clf, proc_df))
-
     # from collections import Counter
     #
     # dc = Counter(pred)
     # print(dc)
     # list_sizes = [i for i in pred if i == 1]
-
-
 
     if isinstance(pred, np.ndarray):
 
@@ -117,35 +112,23 @@ if __name__ == '__main__':
 
     else:
         print('something is wrong in input. Contact administrator at akshit@email.arizona.edu')
-
-    # response = "\n".join(resp_list)
     resp_df = DataFrame(resp_list, columns=['Prediction'])
-    # temp = test_df.iloc[:count, :]
-    # final_df = concat([resp_df,temp], axis=1)
-    # print(final_df.head(10))
     st.subheader('Prediction')
     st.dataframe(resp_df)
 
     set_theme(style="white")
 
     train_df = import_data(train=True)
-
     corr = train_df.corr()
-
     # Generate a mask for the upper triangle
     mask = np.triu(np.ones_like(corr, dtype=bool))
     # Set up the matplotlib figure
-    f, ax = plt.subplots(figsize=(3,3))
-
+    f, ax = plt.subplots(figsize=(3, 3))
     # Generate a custom diverging colormap
     cmap = diverging_palette(256, 20, as_cmap=True)
 
-    # Draw the heatmap with the mask and correct aspect ratio
-    # res = heatmap(corr, mask=mask, cmap=cmap, vmax=5, center=0,
-    #               square=True,linewidths=2, annot=True, annot_kws={"fontsize":8})
-
-    res = heatmap(corr, vmax=1, square=True,cmap="YlGnBu", linewidths=0.1, annot=True,
-                annot_kws={"fontsize": 6},)
+    res = heatmap(corr, vmax=1, square=True, cmap="YlGnBu", linewidths=0.1, annot=True,
+                  annot_kws={"fontsize": 6}, )
 
     res.set_xticklabels(res.get_xmajorticklabels(), fontsize=10)
     res.set_yticklabels(res.get_ymajorticklabels(), fontsize=10)
