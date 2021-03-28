@@ -7,6 +7,7 @@ from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from pandas import read_csv, get_dummies, concat, DataFrame, set_option
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
@@ -111,7 +112,12 @@ def split_dataset(df, test_size, seed):
 
 def fit_model(x_train, y_train):
     # model = RandomForestClassifier(n_estimators=1500)
-    model = XGBClassifier(use_label_encoder=False)
+    # model = XGBClassifier(use_label_encoder=False)
+    model = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+                               intercept_scaling=1, l1_ratio=None, max_iter=1000,
+                               multi_class='auto', n_jobs=None, penalty='l2',
+                               random_state=2937, solver='lbfgs', tol=0.0001, verbose=0,
+                               warm_start=False)
     x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=123)
     model.fit(x_train, y_train)
     return model
@@ -168,5 +174,7 @@ if __name__ == '__main__':
         dump(model, open('models/randomforest.pkl', 'wb'))
     elif isinstance(model, XGBClassifier):
         dump(model, open('models/xgboost.pkl', 'wb'))
+    elif isinstance(model, LogisticRegression):
+        dump(model, open('models/logisticreg.pkl', 'wb'))
 
-    print('pickle dumped')
+    print('model dumped')

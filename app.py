@@ -90,7 +90,7 @@ if __name__ == '__main__':
     test_df, count = collect_data()
     proc_df = preprocess_data(test_df, count)
     # print(list(proc_df.columns))
-    clf = pickle.load(open('models/xgboost.pkl', 'rb'))
+    clf = pickle.load(open('models/logisticreg.pkl', 'rb'))
     pred = (predictions(clf, proc_df))
     # from collections import Counter
     #
